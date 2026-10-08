@@ -1,0 +1,69 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Press+Start+2P&family=VT323&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply font-body transition-colors duration-500 ease-in-out;
+  }
+  
+  /* Light Mode Defaults */
+  body {
+    @apply bg-magic-50 text-magic-900;
+  }
+
+  /* Dark Mode Overrides */
+  .dark body {
+    @apply bg-cosmic-900 text-cosmic-100;
+  }
+
+  /* Custom Scrollbar for a retro feel */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-magic-100 dark:bg-cosmic-800;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-magic-400 dark:bg-cosmic-600 rounded-sm border-2 border-magic-100 dark:border-cosmic-800;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-accent dark:bg-accent-light;
+  }
+}
+
+@layer components {
+  /* Reusable Pixel Border Utility */
+  .pixel-border {
+    @apply border-2 border-magic-900 dark:border-cosmic-100 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] dark:shadow-[4px_4px_0px_0px_rgba(139,92,246,0.3)];
+  }
+  
+  .pixel-border-sm {
+    @apply border-2 border-magic-900 dark:border-cosmic-100 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)] dark:shadow-[2px_2px_0px_0px_rgba(139,92,246,0.3)];
+  }
+
+  /* Magical Button Base */
+  .btn-magic {
+    @apply font-pixel text-xl px-6 py-3 rounded-sm transition-all duration-150 active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  
+  .btn-primary {
+    @apply btn-magic bg-accent text-white border-2 border-accent-dark hover:bg-accent-dark shadow-[4px_4px_0px_0px_rgba(109,40,217,1)] dark:shadow-[4px_4px_0px_0px_rgba(251,191,36,1)] dark:border-accent-light dark:text-cosmic-900 dark:hover:bg-accent-light;
+  }
+
+  .btn-secondary {
+    @apply btn-magic bg-magic-100 text-magic-900 border-2 border-magic-900 hover:bg-magic-200 shadow-[4px_4px_0px_0px_rgba(74,58,75,1)] dark:bg-cosmic-800 dark:text-cosmic-100 dark:border-cosmic-100 dark:hover:bg-cosmic-700 dark:shadow-[4px_4px_0px_0px_rgba(139,92,246,1)];
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
