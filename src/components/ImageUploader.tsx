@@ -1,10 +1,10 @@
 import { useState, useCallback } from 'react';
-import { Upload, Image as ImageIcon, X, AlertCircle } from 'lucide-react';
+import { Image as ImageIcon, X, AlertCircle } from 'lucide-react';
 import { processImage } from '../utils/imageProcessor';
 import { useGameStore } from '../store/gameStore';
 
 export function ImageUploader() {
-  const { image, setImage } = useGameStore();
+  const { image, setImage, clearImage } = useGameStore();
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -52,9 +52,9 @@ export function ImageUploader() {
   };
 
   const handleRemove = () => {
-    setImage(null);
-    setError(null);
-  };
+  clearImage();
+  setError(null);
+};
 
   // UI: Image Preview State
   if (image) {
