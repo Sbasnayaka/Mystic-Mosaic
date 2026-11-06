@@ -1,15 +1,16 @@
 import { useState, useEffect } from 'react';
 import { LandingPage } from './pages/LandingPage';
+import { RoomSetup } from './pages/RoomSetup';
 import { WaitingRoom } from './pages/WaitingRoom';
 import { RoomFull } from './pages/RoomFull';
 import { useGameStore } from './store/gameStore';
 
-// Temporary placeholder for the next phase
-function GameSetup() {
+// Temporary placeholder for Phase 6/7
+function GameBoardPlaceholder() {
   const { leaveRoom } = useGameStore();
   return (
     <div className="min-h-screen flex flex-col items-center justify-center gap-4 font-pixel text-2xl text-accent p-4 text-center">
-      <p>✦ PHASE 5 & 6: IMAGE UPLOAD & DIFFICULTY COMING NEXT ✦</p>
+      <p>✦ PHASE 6 & 7: DIFFICULTY & PUZZLE ENGINE COMING NEXT ✦</p>
       <button onClick={leaveRoom} className="pixel-btn text-base mt-4">
         ← Leave Room
       </button>
@@ -18,20 +19,21 @@ function GameSetup() {
 }
 
 export default function App() {
-  const { createRoom, joinRoom, roomId, status, leaveRoom } = useGameStore();
-  const [view, setView] = useState<'landing' | 'waiting' | 'full' | 'setup'>('landing');
+  const { createRoom, joinRoom, roomId, status, image, leaveRoom } = useGameStore();
+  
+  // Views: 'landing', 'setup', 'waiting', 'full', 'playing'
+  const [view, setView] = useState<'landing' | 'setup' | 'waiting' | 'full' | 'playing'>('landing');
 
-  // 1. Check URL on initial load to see if we should auto-join a room
+  // 1. Check URL on initial load
   useEffect(() => {
     const path = window.location.pathname;
     const roomMatch = path.match(/^\/room\/(.+)$/);
 
     if (roomMatch) {
       const targetRoomId = roomMatch[1].toUpperCase();
-      // Attempt to join. If it fails (e.g., full), the store handles it.
-      // For now, we simulate a join. In Phase 8, this will be a real PeerJS connection.
       const success = joinRoom(targetRoomId);
       if (success) {
+        // If joining, we skip setup and go straight to waiting
         setView('waiting');
       } else {
         setView('full');
@@ -42,17 +44,19 @@ export default function App() {
   // 2. Sync view with store status
   useEffect(() => {
     if (status === 'full') setView('full');
-    else if (status === 'playing') setView('setup'); // Will become GameBoard later
-    else if (roomId && status === 'waiting') setView('waiting');
+    else if (status === 'playing') setView('playing');
+    else if (roomId && status === 'waiting') {
+      // If we have an image, we are in the waiting room. If not, we are in setup.
+      setView(image ? 'waiting' : 'setup');
+    }
     else if (!roomId) setView('landing');
-  }, [roomId, status]);
+  }, [roomId, status, image]);
 
   // 3. Action Handlers
   const handleCreateRoom = () => {
-    const newRoomId = createRoom();
-    // Update the browser URL without reloading the page
-    window.history.pushState({}, '', `/room/${newRoomId}`);
-    setView('waiting');
+    createRoom();
+    window.history.pushState({}, '', `/room/SETUP`); // Temporary URL
+    setView('setup');
   };
 
   const handleJoinFromLanding = (inputCode: string) => {
@@ -61,16 +65,19 @@ export default function App() {
     
     window.history.pushState({}, '', `/room/${cleanCode}`);
     const success = joinRoom(cleanCode);
-    if (success) {
-      setView('waiting');
-    } else {
-      setView('full');
-    }
+    if (success) setView('waiting');
+    else setView('full');
+  };
+
+  const handleSetupComplete = () => {
+    // Host has uploaded an image, now they go to the waiting room to share the link
+    window.history.pushState({}, '', `/room/${roomId}`);
+    setView('waiting');
   };
 
   const handleLeave = () => {
     leaveRoom();
-    window.history.pushState({}, '', '/'); // Reset URL to home
+    window.history.pushState({}, '', '/');
     setView('landing');
   };
 
@@ -79,22 +86,14 @@ export default function App() {
       {view === 'landing' && (
         <LandingPage 
           onCreateRoom={handleCreateRoom} 
-          onJoinRoom={(code?: string) => {
-             if (code) handleJoinFromLanding(code);
-             else {
-               // If they clicked "Join" without typing, we can show a prompt or just focus the input
-               // For simplicity, we'll let the LandingPage handle the input state and pass it here
-             }
-          }} 
+          onJoinRoom={handleJoinFromLanding} 
         />
       )}
       
-      {/* We need to slightly adjust LandingPage to pass the input code. 
-          See the note below on how to update LandingPage.tsx */}
-      
-      {view === 'waiting' && <WaitingRoom />}
+      {view === 'setup' && <RoomSetup onProceed={handleSetupComplete} />}
+      {view === 'waiting' && <WaitingRoom onStartGame={() => setView('playing')} />}
       {view === 'full' && <RoomFull />}
-      {view === 'setup' && <GameSetup />}
+      {view === 'playing' && <GameBoardPlaceholder />}
     </main>
   );
 }
