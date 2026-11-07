@@ -1,5 +1,6 @@
 
 import { create } from 'zustand';
+import { getDifficultyConfig, type DifficultyConfig } from '../utils/difficulty';
 
 export type Player = {
   id: string;
@@ -18,6 +19,11 @@ interface GameState {
   image: string | null;
   setImage: (imageData: string) => void;
   clearImage: () => void;
+
+  // Difficulty settings
+  difficultyLevel: number;
+  setDifficultyLevel: (level: number) => void;
+  getCurrentDifficulty: () => DifficultyConfig;
 
   // Actions
   createRoom: () => string;
@@ -38,6 +44,9 @@ export const useGameStore = create<GameState>((set, get) => ({
 
   // Image state
   image: null,
+
+  // Difficulty state (Level 6 = 64 pieces)
+  difficultyLevel: 6,
 
   // Create a new game room
   createRoom: () => {
@@ -86,10 +95,22 @@ export const useGameStore = create<GameState>((set, get) => ({
   // Clear the stored image
   clearImage: () => set({ image: null }),
 
+  // Update the selected difficulty level
+  setDifficultyLevel: (level) => set({ difficultyLevel: level }),
+
+  // Get the configuration for the current difficulty
+  getCurrentDifficulty: () => {
+    const { difficultyLevel } = get();
+    return getDifficultyConfig(difficultyLevel);
+  },
+
+  // Leave room
   leaveRoom: () =>
     set({ roomId: null, players: [], status: 'waiting' }),
 
+  // Start game
   startGame: () => set({ status: 'playing' }),
 
+  // Mark room as full
   setFull: () => set({ status: 'full' }),
 }));
