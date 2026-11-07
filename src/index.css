@@ -96,3 +96,58 @@
     animation: blink 1s step-end infinite;
   }
 }
+
+/* Retro Range Slider Styling */
+.retro-slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 12px;
+  background: #e9d5ff; /* magic-200 */
+  border: 2px solid #3b0764; /* magic-900 */
+  border-radius: 2px;
+  outline: none;
+}
+
+.retro-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  background: #e879f9; /* accent */
+  border: 3px solid #3b0764; /* magic-900 */
+  border-radius: 2px;
+  cursor: pointer;
+  box-shadow: 2px 2px 0px 0px rgba(0,0,0,1);
+  transition: transform 0.1s;
+}
+
+.retro-slider::-webkit-slider-thumb:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0px 0px 0px 0px rgba(0,0,0,1);
+}
+
+.retro-slider::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  background: #e879f9;
+  border: 3px solid #3b0764;
+  border-radius: 2px;
+  cursor: pointer;
+  box-shadow: 2px 2px 0px 0px rgba(0,0,0,1);
+}
+
+/* Dark mode overrides for the slider */
+.dark .retro-slider {
+  background: #312e81; /* cosmic-800 */
+  border-color: #0b0720; /* cosmic-950 */
+}
+.dark .retro-slider::-webkit-slider-thumb,
+.dark .retro-slider::-moz-range-thumb {
+  background: #e879f9;
+  border-color: #0b0720;
+}
+
+.retro-slider:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
